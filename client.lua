@@ -52,6 +52,22 @@ local function GetPlayersFromCoords(coords, distance)
     return closePlayers
 end
 
+local function DrawPlayerNumbers()
+    CreateThread(function()
+        while scoreboardOpen do
+            for _, player in pairs(GetPlayersFromCoords(GetEntityCoords(PlayerPedId()), 10.0)) do
+                local playerId = GetPlayerServerId(player)
+                local playerPed = GetPlayerPed(player)
+                local playerCoords = GetEntityCoords(playerPed)
+                if Config.ShowIDforALL or playerOptin[playerId].optin then
+                    DrawText3D(playerCoords.x, playerCoords.y, playerCoords.z + 1.0, '['..playerId..']')
+                end
+            end
+            Wait(0)
+        end
+    end)
+end
+
 -- Events
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
@@ -81,6 +97,7 @@ if Config.Toggle then
                 })
 
                 scoreboardOpen = true
+                DrawPlayerNumbers()
             end)
         else
             SendNUIMessage({
@@ -107,6 +124,7 @@ else
             })
 
             scoreboardOpen = true
+            DrawPlayerNumbers()
         end)
     end, false)
 
@@ -134,22 +152,4 @@ CreateThread(function()
         action = "setup",
         items = actions
     })
-end)
-
-CreateThread(function()
-    while true do
-        local loop = 100
-        if scoreboardOpen then
-            for _, player in pairs(GetPlayersFromCoords(GetEntityCoords(PlayerPedId()), 10.0)) do
-                local playerId = GetPlayerServerId(player)
-                local playerPed = GetPlayerPed(player)
-                local playerCoords = GetEntityCoords(playerPed)
-                if Config.ShowIDforALL or playerOptin[playerId].optin then
-                    loop = 0
-                    DrawText3D(playerCoords.x, playerCoords.y, playerCoords.z + 1.0, '['..playerId..']')
-                end
-            end
-        end
-        Wait(loop)
-    end
 end)
