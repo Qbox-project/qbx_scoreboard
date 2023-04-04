@@ -1,4 +1,4 @@
-local QBCore = exports['qb-core']:GetCoreObject()
+local QBCore = exports['qbx-core']:GetCoreObject()
 
 QBCore.Functions.CreateCallback('qb-scoreboard:server:GetConfig', function(_, cb)
     cb(Config.IllegalActions)
