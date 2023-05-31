@@ -1,10 +1,10 @@
 local QBCore = exports['qbx-core']:GetCoreObject()
 
-QBCore.Functions.CreateCallback('qb-scoreboard:server:GetConfig', function(_, cb)
-    cb(Config.IllegalActions)
+lib.callback.register('qb-scoreboard:server:GetConfig', function()
+    return Config.IllegalActions
 end)
 
-QBCore.Functions.CreateCallback('qb-scoreboard:server:GetScoreboardData', function(_, cb)
+lib.callback.register('qb-scoreboard:server:GetScoreboardData', function()
     local totalPlayers = 0
     local policeCount = 0
     local players = {}
@@ -21,7 +21,7 @@ QBCore.Functions.CreateCallback('qb-scoreboard:server:GetScoreboardData', functi
             players[v.PlayerData.source].optin = QBCore.Functions.IsOptin(v.PlayerData.source)
         end
     end
-    cb(totalPlayers, policeCount, players)
+    return totalPlayers, policeCount, players
 end)
 
 RegisterNetEvent('qb-scoreboard:server:SetActivityBusy', function(activity, bool)
