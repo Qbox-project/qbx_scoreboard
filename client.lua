@@ -71,9 +71,7 @@ end
 -- Events
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    QBCore.Functions.TriggerCallback('qb-scoreboard:server:GetConfig', function(config)
-        Config.IllegalActions = config
-    end)
+    Config.IllegalActions = lib.callback.await('qb-scoreboard:server:GetConfig')
 end)
 
 RegisterNetEvent('qb-scoreboard:client:SetActivityBusy', function(activity, busy)
@@ -85,7 +83,7 @@ end)
 if Config.Toggle then
     RegisterCommand('scoreboard', function()
         if not scoreboardOpen then
-            QBCore.Functions.TriggerCallback('qb-scoreboard:server:GetScoreboardData', function(players, cops, playerList)
+            lib.callback('qb-scoreboard:server:GetScoreboardData', false, function(players, cops, playerList)
                 playerOptin = playerList
 
                 SendNUIMessage({
@@ -112,7 +110,7 @@ if Config.Toggle then
 else
     RegisterCommand('+scoreboard', function()
         if scoreboardOpen then return end
-        QBCore.Functions.TriggerCallback('qb-scoreboard:server:GetScoreboardData', function(players, cops, playerList)
+        lib.callback('qb-scoreboard:server:GetScoreboardData', false, function(players, cops, playerList)
             playerOptin = playerList
 
             SendNUIMessage({
