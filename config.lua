@@ -10,32 +10,40 @@ Config.MaxPlayers = GetConvarInt('sv_maxclients', 48) -- It returns 48 if it can
 
 -- Minimum Police for Actions
 Config.IllegalActions = {
-    ["storerobbery"] = {
+    storerobbery = {
         minimumPolice = 2,
         busy = false,
         label = "Store Robbery",
     },
-    ["bankrobbery"] = {
+    bankrobbery = {
         minimumPolice = 3,
         busy = false,
         label = "Bank Robbery"
     },
-    ["jewellery"] = {
+    jewellery = {
         minimumPolice = 2,
         busy = false,
         label = "Jewellery"
     },
-    ["pacific"] = {
+    pacific = {
         minimumPolice = 5,
         busy = false,
         label = "Pacific Bank"
     },
-    ["paleto"] = {
+    paleto = {
         minimumPolice = 4,
         busy = false,
         label = "Paleto Bay Bank"
     }
 }
 
--- Show ID's for all players or Opted in Staff
-Config.ShowIDforALL = false
+---@enum IdVisibility
+IdVisibility = {
+    ADMIN_ONLY = 1, -- only admins can see player ids
+    ADMIN_EXCLUDED = 2, -- all players will see player ids except for those of admins
+    ALL = 3 -- all ids are viewable for all players and of all players
+}
+
+Config.IdVisibility = IdVisibility.ADMIN_ONLY
+
+

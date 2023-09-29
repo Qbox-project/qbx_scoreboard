@@ -1,24 +1,21 @@
-local QBCore = exports['qbx-core']:GetCoreObject()
-
-lib.callback.register('qb-scoreboard:server:GetConfig', function()
+lib.callback.register('qbx_scoreboard:server:getConfig', function()
     return Config.IllegalActions
 end)
 
-lib.callback.register('qb-scoreboard:server:GetScoreboardData', function()
+lib.callback.register('qbx_scoreboard:server:getScoreboardData', function()
     local totalPlayers = 0
     local policeCount = 0
     local players = {}
 
-    for _, v in pairs(QBCore.Functions.GetQBPlayers()) do
+    for _, v in pairs(exports.qbx_core:GetQBPlayers()) do
         if v then
             totalPlayers += 1
 
-            if v.PlayerData.job.name == "police" and v.PlayerData.job.onduty then
+            if v.PlayerData.job.type == "police" and v.PlayerData.job.onduty then
                 policeCount += 1
             end
 
-            players[v.PlayerData.source] = {}
-            players[v.PlayerData.source].optin = QBCore.Functions.IsOptin(v.PlayerData.source)
+            players[v.PlayerData.source].isOnDutyAdmin = IsPlayerAceAllowed(v.PlayerData.source, 'group.admin') and v.PlayerData.optin
         end
     end
     return totalPlayers, policeCount, players
