@@ -1,2 +1,2 @@
-# qb-scoreboard
-Scoreboard for QB-Core
+# qbx_scoreboard
+Scoreboard for Qbox

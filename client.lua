@@ -1,66 +1,25 @@
-local QBCore = exports['qbx-core']:GetCoreObject()
 local scoreboardOpen = false
 local playerOptin = {}
 
--- Functions
-
-local function DrawText3D(x, y, z, text)
-	SetTextScale(0.35, 0.35)
-    SetTextFont(4)
-    SetTextProportional(1)
-    SetTextColour(255, 255, 255, 215)
-    SetTextEntry("STRING")
-    SetTextCentre(true)
-    AddTextComponentString(text)
-    SetDrawOrigin(x,y,z, 0)
-    DrawText(0.0, 0.0)
-    local factor = (string.len(text)) / 370
-    DrawRect(0.0, 0.0+0.0125, 0.017+ factor, 0.03, 0, 0, 0, 75)
-    ClearDrawOrigin()
+local function shouldShowPlayerId(isTargetAdmin)
+    local isClientAdmin = playerOptin[cache.playerId].isOnDutyAdmin
+    if Config.IdVisibility == IdVisibility.ALL then return true end
+    if isClientAdmin then return true end
+    if Config.IdVisibility == IdVisibility.ADMIN_ONLY then return false end
+    if Config.IdVisibility == IdVisibility.ADMIN_EXCLUDED and isTargetAdmin then return false end
+    return true
 end
 
-local function GetPlayers()
-    local players = {}
-    local activePlayers = GetActivePlayers()
-    for i = 1, #activePlayers do
-        local player = activePlayers[i]
-        local ped = GetPlayerPed(player)
-        if DoesEntityExist(ped) then
-            players[#players+1] = player
-        end
-    end
-    return players
-end
-
-local function GetPlayersFromCoords(coords, distance)
-    local players = GetPlayers()
-    local closePlayers = {}
-
-	coords = coords or GetEntityCoords(PlayerPedId())
-    distance = distance or  5.0
-
-    for i = 1, #players do
-        local player = players[i]
-		local target = GetPlayerPed(player)
-		local targetCoords = GetEntityCoords(target)
-		local targetdistance = #(targetCoords - vector3(coords.x, coords.y, coords.z))
-		if targetdistance <= distance then
-            closePlayers[#closePlayers+1] = player
-		end
-    end
-
-    return closePlayers
-end
-
-local function DrawPlayerNumbers()
+local function drawPlayerNumbers()
     CreateThread(function()
         while scoreboardOpen do
-            for _, player in pairs(GetPlayersFromCoords(GetEntityCoords(PlayerPedId()), 10.0)) do
-                local playerId = GetPlayerServerId(player)
-                local playerPed = GetPlayerPed(player)
-                local playerCoords = GetEntityCoords(playerPed)
-                if Config.ShowIDforALL or playerOptin[playerId].optin then
-                    DrawText3D(playerCoords.x, playerCoords.y, playerCoords.z + 1.0, '['..playerId..']')
+            local players = cache('nearbyPlayers', function()
+                return lib.getNearbyPlayers(GetEntityCoords(cache.ped), 10, true)
+            end, 1000)
+            for i = 1, #players do
+                local player = players[i]
+                if shouldShowPlayerId(playerOptin[player.id].isOnDutyAdmin) then
+                    DrawText3D(vec3(player.coords.x, player.coords.y, player.coords.z + 1.0), '['..player.id..']')
                 end
             end
             Wait(0)
@@ -80,59 +39,46 @@ end)
 
 -- Command
 
+local function openScoreboard()
+    lib.callback('qbx_scoreboard:server:getScoreboardData', false, function(players, cops, playerList)
+        playerOptin = playerList
+
+        SendNUIMessage({
+            action = "open",
+            players = players,
+            maxPlayers = Config.MaxPlayers,
+            requiredCops = Config.IllegalActions,
+            currentCops = cops
+        })
+
+        scoreboardOpen = true
+        drawPlayerNumbers()
+    end)
+end
+
+local function closeScoreboard()
+    SendNUIMessage({
+        action = "close",
+    })
+
+    scoreboardOpen = false
+end
+
 if Config.Toggle then
     RegisterCommand('scoreboard', function()
-        if not scoreboardOpen then
-            lib.callback('qb-scoreboard:server:GetScoreboardData', false, function(players, cops, playerList)
-                playerOptin = playerList
-
-                SendNUIMessage({
-                    action = "open",
-                    players = players,
-                    maxPlayers = Config.MaxPlayers,
-                    requiredCops = Config.IllegalActions,
-                    currentCops = cops
-                })
-
-                scoreboardOpen = true
-                DrawPlayerNumbers()
-            end)
-        else
-            SendNUIMessage({
-                action = "close",
-            })
-
-            scoreboardOpen = false
-        end
+        if scoreboardOpen then closeScoreboard() else openScoreboard() end
     end, false)
 
     RegisterKeyMapping('scoreboard', 'Open Scoreboard', 'keyboard', Config.OpenKey)
 else
     RegisterCommand('+scoreboard', function()
         if scoreboardOpen then return end
-        lib.callback('qb-scoreboard:server:GetScoreboardData', false, function(players, cops, playerList)
-            playerOptin = playerList
-
-            SendNUIMessage({
-                action = "open",
-                players = players,
-                maxPlayers = Config.MaxPlayers,
-                requiredCops = Config.IllegalActions,
-                currentCops = cops
-            })
-
-            scoreboardOpen = true
-            DrawPlayerNumbers()
-        end)
+        openScoreboard()
     end, false)
 
     RegisterCommand('-scoreboard', function()
         if not scoreboardOpen then return end
-        SendNUIMessage({
-            action = "close",
-        })
-
-        scoreboardOpen = false
+        closeScoreboard()
     end, false)
 
     RegisterKeyMapping('+scoreboard', 'Open Scoreboard', 'keyboard', Config.OpenKey)
