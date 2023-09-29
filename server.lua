@@ -1,4 +1,4 @@
-lib.callback.register('qb-scoreboard:server:GetConfig', function()
+lib.callback.register('qbx_scoreboard:server:getConfig', function()
     return Config.IllegalActions
 end)
 

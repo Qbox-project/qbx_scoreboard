@@ -30,7 +30,7 @@ end
 -- Events
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    Config.IllegalActions = lib.callback.await('qb-scoreboard:server:GetConfig')
+    Config.IllegalActions = lib.callback.await('qbx_scoreboard:server:getConfig')
 end)
 
 RegisterNetEvent('qb-scoreboard:client:SetActivityBusy', function(activity, busy)
