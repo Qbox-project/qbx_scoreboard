@@ -25,7 +25,3 @@ RegisterNetEvent('qb-scoreboard:server:SetActivityBusy', function(activity, bool
     Config.IllegalActions[activity].busy = bool
     TriggerClientEvent('qb-scoreboard:client:SetActivityBusy', -1, activity, bool)
 end)
-
-lib.addCommand('id', {help = 'Check Your ID #'}, function(source)
-    exports.qbx_core:Notify(source,  'ID: '..source)
-end)
