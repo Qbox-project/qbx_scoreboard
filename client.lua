@@ -44,7 +44,7 @@ local function openScoreboard()
         playerOptin = playerList
 
         SendNUIMessage({
-            action = "open",
+            action = 'open',
             players = players,
             maxPlayers = Config.MaxPlayers,
             requiredCops = Config.IllegalActions,
@@ -58,7 +58,7 @@ end
 
 local function closeScoreboard()
     SendNUIMessage({
-        action = "close",
+        action = 'close',
     })
 
     scoreboardOpen = false
@@ -93,7 +93,7 @@ CreateThread(function()
         actions[k] = v.label
     end
     SendNUIMessage({
-        action = "setup",
+        action = 'setup',
         items = actions
     })
 end)
