@@ -70,7 +70,7 @@ if Config.Toggle then
         name = 'scoreboard',
         description = 'Open Scoreboard',
         defaultKey = Config.OpenKey,
-        onPressed = function(self)
+        onPressed = function()
             scoreboardOpen = not scoreboardOpen
             if scoreboardOpen then openScoreboard() end
             closeScoreboard()
