@@ -2,7 +2,7 @@ local scoreboardOpen = false
 local playerOptin = {}
 
 local function shouldShowPlayerId(isTargetAdmin)
-    local isClientAdmin = playerOptin[cache.playerId].isOnDutyAdmin
+    local isClientAdmin = playerOptin[cache.serverId].isOnDutyAdmin
     if Config.IdVisibility == IdVisibility.ALL then return true end
     if isClientAdmin then return true end
     if Config.IdVisibility == IdVisibility.ADMIN_ONLY then return false end
@@ -18,8 +18,9 @@ local function drawPlayerNumbers()
             end, 1000)
             for i = 1, #players do
                 local player = players[i]
-                if shouldShowPlayerId(playerOptin[player.id].isOnDutyAdmin) then
-                    DrawText3D(vec3(player.coords.x, player.coords.y, player.coords.z + 1.0), '['..player.id..']')
+                local serverId = GetPlayerServerId(player.id)
+                if shouldShowPlayerId(playerOptin[serverId].isOnDutyAdmin) then
+                    DrawText3D('['..serverId..']', vec3(player.coords.x, player.coords.y, player.coords.z + 1.0))
                 end
             end
             Wait(0)
@@ -65,23 +66,24 @@ local function closeScoreboard()
 end
 
 if Config.Toggle then
-    RegisterCommand('scoreboard', function()
-        if scoreboardOpen then closeScoreboard() else openScoreboard() end
-    end, false)
-
-    RegisterKeyMapping('scoreboard', 'Open Scoreboard', 'keyboard', Config.OpenKey)
+    lib.addKeybind({
+        name = 'scoreboard',
+        description = 'Open Scoreboard',
+        defaultKey = Config.OpenKey,
+        onPressed = function(self)
+            scoreboardOpen = not scoreboardOpen
+            if scoreboardOpen then openScoreboard() end
+            closeScoreboard()
+        end,
+    })
 else
-    RegisterCommand('+scoreboard', function()
-        if scoreboardOpen then return end
-        openScoreboard()
-    end, false)
-
-    RegisterCommand('-scoreboard', function()
-        if not scoreboardOpen then return end
-        closeScoreboard()
-    end, false)
-
-    RegisterKeyMapping('+scoreboard', 'Open Scoreboard', 'keyboard', Config.OpenKey)
+    lib.addKeybind({
+        name = 'scoreboard',
+        description = 'Open Scoreboard',
+        defaultKey = Config.OpenKey,
+        onPressed = openScoreboard,
+        onReleased = closeScoreboard
+    })
 end
 
 -- Threads
