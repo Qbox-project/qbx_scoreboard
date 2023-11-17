@@ -11,7 +11,7 @@ lib.callback.register('qbx_scoreboard:server:getScoreboardData', function()
         if v then
             totalPlayers += 1
 
-            if v.PlayerData.job.type == 'police' and v.PlayerData.job.onduty then
+            if v.PlayerData.job.type == 'leo' and v.PlayerData.job.onduty then
                 policeCount += 1
             end
 
