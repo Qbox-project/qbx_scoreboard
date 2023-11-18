@@ -15,7 +15,7 @@ lib.callback.register('qbx_scoreboard:server:getScoreboardData', function()
                 policeCount += 1
             end
 
-            players[v.PlayerData.source] = {isOnDutyAdmin = IsPlayerAceAllowed(source, 'admin') and v.PlayerData.optin}
+            players[v.PlayerData.source] = {isOnDutyAdmin = IsPlayerAceAllowed(v.PlayerData.source, 'admin') and v.PlayerData.optin}
         end
     end
     return totalPlayers, policeCount, players
