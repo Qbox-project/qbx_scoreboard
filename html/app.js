@@ -47,7 +47,7 @@ const Setup = (data) => {
     `;
   });
   scoreboardHtml += `
-    <div class="scoreboard-info-beam" style="background: #dc143c">
+    <div class="scoreboard-info-beam" style="background: rgba(241, 229, 66, 0.651)">
       <div class="info-beam-title-players">
         <p>Total Players</p>
       </div>

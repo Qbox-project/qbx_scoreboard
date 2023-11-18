@@ -11,11 +11,11 @@ lib.callback.register('qbx_scoreboard:server:getScoreboardData', function()
         if v then
             totalPlayers += 1
 
-            if v.PlayerData.job.type == "police" and v.PlayerData.job.onduty then
+            if v.PlayerData.job.type == 'leo' and v.PlayerData.job.onduty then
                 policeCount += 1
             end
 
-            players[v.PlayerData.source].isOnDutyAdmin = IsPlayerAceAllowed(v.PlayerData.source, 'group.admin') and v.PlayerData.optin
+            players[v.PlayerData.source] = {isOnDutyAdmin = IsPlayerAceAllowed(v.PlayerData.source, 'admin') and v.PlayerData.optin}
         end
     end
     return totalPlayers, policeCount, players
