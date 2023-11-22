@@ -1,21 +1,24 @@
 fx_version 'cerulean'
 game 'gta5'
 
-description 'QBX_Scoreboard'
-version '1.0.1'
-
-ui_page 'html/ui.html'
+description 'qbx_scoreboard'
+repository 'https://github.com/Qbox-project/qbx_scoreboard'
+version '1.0.0'
 
 shared_scripts {
     '@ox_lib/init.lua',
     '@qbx_core/modules/utils.lua',
-    'config.lua',
 }
-client_script 'client.lua'
-server_script 'server.lua'
+
+client_script 'client/main.lua'
+server_script 'server/main.lua'
+
+ui_page 'html/ui.html'
 
 files {
-    'html/*'
+    'html/*',
+    'config/client.lua',
+    'config/shared.lua',
 }
 
 lua54 'yes'

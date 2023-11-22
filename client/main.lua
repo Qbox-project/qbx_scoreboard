@@ -1,12 +1,14 @@
+local config = require 'config.client'
+local sharedConfig = require 'config.shared'
 local scoreboardOpen = false
 local playerOptin = {}
 
 local function shouldShowPlayerId(isTargetAdmin)
     local isClientAdmin = playerOptin[cache.serverId].isOnDutyAdmin
-    if Config.IdVisibility == IdVisibility.ALL then return true end
+    if config.idVisibility == ALL then return true end
     if isClientAdmin then return true end
-    if Config.IdVisibility == IdVisibility.ADMIN_ONLY then return false end
-    if Config.IdVisibility == IdVisibility.ADMIN_EXCLUDED and isTargetAdmin then return false end
+    if config.idVisibility == ADMIN_ONLY then return false end
+    if config.idVisibility == ADMIN_EXCLUDED and isTargetAdmin then return false end
     return true
 end
 
@@ -31,11 +33,11 @@ end
 -- Events
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    Config.IllegalActions = lib.callback.await('qbx_scoreboard:server:getConfig')
+    sharedConfig.illegalActions = lib.callback.await('qbx_scoreboard:server:getConfig')
 end)
 
 RegisterNetEvent('qb-scoreboard:client:SetActivityBusy', function(activity, busy)
-    Config.IllegalActions[activity].busy = busy
+    sharedConfig.illegalActions[activity].busy = busy
 end)
 
 -- Command
@@ -47,8 +49,8 @@ local function openScoreboard()
         SendNUIMessage({
             action = 'open',
             players = players,
-            maxPlayers = Config.MaxPlayers,
-            requiredCops = Config.IllegalActions,
+            maxPlayers = config.maxPlayers,
+            requiredCops = sharedConfig.illegalActions,
             currentCops = cops
         })
 
@@ -65,11 +67,11 @@ local function closeScoreboard()
     scoreboardOpen = false
 end
 
-if Config.Toggle then
+if config.toggle then
     lib.addKeybind({
         name = 'scoreboard',
         description = 'Open Scoreboard',
-        defaultKey = Config.OpenKey,
+        defaultKey = config.openKey,
         onPressed = function()
             scoreboardOpen = not scoreboardOpen
             if scoreboardOpen then openScoreboard() end
@@ -80,7 +82,7 @@ else
     lib.addKeybind({
         name = 'scoreboard',
         description = 'Open Scoreboard',
-        defaultKey = Config.OpenKey,
+        defaultKey = config.openKey,
         onPressed = openScoreboard,
         onReleased = closeScoreboard
     })
@@ -91,7 +93,7 @@ end
 CreateThread(function()
     Wait(1000)
     local actions = {}
-    for k, v in pairs(Config.IllegalActions) do
+    for k, v in pairs(sharedConfig.illegalActions) do
         actions[k] = v.label
     end
     SendNUIMessage({
