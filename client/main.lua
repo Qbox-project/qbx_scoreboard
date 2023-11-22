@@ -5,10 +5,10 @@ local playerOptin = {}
 
 local function shouldShowPlayerId(isTargetAdmin)
     local isClientAdmin = playerOptin[cache.serverId].isOnDutyAdmin
-    if config.idVisibility == ALL then return true end
+    if config.idVisibility == 'all' then return true end
     if isClientAdmin then return true end
-    if config.idVisibility == ADMIN_ONLY then return false end
-    if config.idVisibility == ADMIN_EXCLUDED and isTargetAdmin then return false end
+    if config.idVisibility == 'admin_only' then return false end
+    if config.idVisibility == 'admin_excluded' and isTargetAdmin then return false end
     return true
 end
 
