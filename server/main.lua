@@ -1,5 +1,7 @@
+local sharedConfig = require 'config.shared'
+
 lib.callback.register('qbx_scoreboard:server:getConfig', function()
-    return Config.IllegalActions
+    return sharedConfig.illegalActions
 end)
 
 lib.callback.register('qbx_scoreboard:server:getScoreboardData', function()
@@ -22,6 +24,6 @@ lib.callback.register('qbx_scoreboard:server:getScoreboardData', function()
 end)
 
 RegisterNetEvent('qb-scoreboard:server:SetActivityBusy', function(activity, bool)
-    Config.IllegalActions[activity].busy = bool
+    sharedConfig.illegalActions[activity].busy = bool
     TriggerClientEvent('qb-scoreboard:client:SetActivityBusy', -1, activity, bool)
 end)
