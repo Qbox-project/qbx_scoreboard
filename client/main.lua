@@ -22,7 +22,10 @@ local function drawPlayerNumbers()
                 local player = players[i]
                 local serverId = GetPlayerServerId(player.id)
                 if shouldShowPlayerId(playerOptin[serverId].isOnDutyAdmin) then
-                    DrawText3D('['..serverId..']', vec3(player.coords.x, player.coords.y, player.coords.z + 1.0))
+                    qbx.drawText3d({
+                        text = '['..serverId..']',
+                        coords = vec3(player.coords.x, player.coords.y, player.coords.z + 1.0),
+                    })
                 end
             end
             Wait(0)
