@@ -1,5 +1,4 @@
 local config = require 'config.client'
-local sharedConfig = require 'config.shared'
 local scoreboardOpen = false
 local playerOptin = {}
 
@@ -22,9 +21,10 @@ local function drawPlayerNumbers()
                 local player = players[i]
                 local serverId = GetPlayerServerId(player.id)
                 if shouldShowPlayerId(playerOptin[serverId].isOnDutyAdmin) then
+                    local pedCoords = GetEntityCoords(player.ped)
                     qbx.drawText3d({
                         text = '['..serverId..']',
-                        coords = vec3(player.coords.x, player.coords.y, player.coords.z + 1.0),
+                        coords = vec3(pedCoords.x, pedCoords.y, pedCoords.z + 1.0),
                     })
                 end
             end
@@ -32,16 +32,6 @@ local function drawPlayerNumbers()
         end
     end)
 end
-
--- Events
-
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    sharedConfig.illegalActions = lib.callback.await('qbx_scoreboard:server:getConfig')
-end)
-
-RegisterNetEvent('qb-scoreboard:client:SetActivityBusy', function(activity, busy)
-    sharedConfig.illegalActions[activity].busy = busy
-end)
 
 -- Command
 
@@ -53,7 +43,7 @@ local function openScoreboard()
             action = 'open',
             players = players,
             maxPlayers = config.maxPlayers,
-            requiredCops = sharedConfig.illegalActions,
+            requiredCops = GlobalState.illegalActions,
             currentCops = cops
         })
 
@@ -96,7 +86,7 @@ end
 CreateThread(function()
     Wait(1000)
     local actions = {}
-    for k, v in pairs(sharedConfig.illegalActions) do
+    for k, v in pairs(GlobalState.illegalActions) do
         actions[k] = v.label
     end
     SendNUIMessage({

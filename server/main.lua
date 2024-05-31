@@ -1,8 +1,5 @@
 local sharedConfig = require 'config.shared'
-
-lib.callback.register('qbx_scoreboard:server:getConfig', function()
-    return sharedConfig.illegalActions
-end)
+GlobalState.illegalActions = sharedConfig.illegalActions
 
 lib.callback.register('qbx_scoreboard:server:getScoreboardData', function()
     local totalPlayers = 0
@@ -23,7 +20,10 @@ lib.callback.register('qbx_scoreboard:server:getScoreboardData', function()
     return totalPlayers, policeCount, players
 end)
 
-RegisterNetEvent('qb-scoreboard:server:SetActivityBusy', function(activity, bool)
-    sharedConfig.illegalActions[activity].busy = bool
-    TriggerClientEvent('qb-scoreboard:client:SetActivityBusy', -1, activity, bool)
-end)
+local function setActivityBusy(name, bool)
+    local illegalActions = GlobalState.illegalActions
+    illegalActions[name].busy = bool
+    GlobalState.illegalActions = illegalActions
+end
+RegisterNetEvent('qb-scoreboard:server:SetActivityBusy', setActivityBusy)
+exports('SetActivityBusy', setActivityBusy)
