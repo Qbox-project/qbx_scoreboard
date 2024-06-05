@@ -1,9 +1,8 @@
 local config = require 'config.client'
-local scoreboardOpen = false
-local playerOptin = {}
+local isScoreboardOpen, onDutyAdmins
 
 local function shouldShowPlayerId(isTargetAdmin)
-    local isClientAdmin = playerOptin[cache.serverId].isOnDutyAdmin
+    local isClientAdmin = onDutyAdmins[cache.serverId]
     if config.idVisibility == 'all' then return true end
     if isClientAdmin then return true end
     if config.idVisibility == 'admin_only' then return false end
@@ -13,14 +12,14 @@ end
 
 local function drawPlayerNumbers()
     CreateThread(function()
-        while scoreboardOpen do
+        while isScoreboardOpen do
             local players = cache('nearbyPlayers', function()
                 return lib.getNearbyPlayers(GetEntityCoords(cache.ped), 10, true)
             end, 1000)
             for i = 1, #players do
                 local player = players[i]
                 local serverId = GetPlayerServerId(player.id)
-                if shouldShowPlayerId(playerOptin[serverId].isOnDutyAdmin) then
+                if shouldShowPlayerId(onDutyAdmins[serverId]) then
                     local pedCoords = GetEntityCoords(player.ped)
                     qbx.drawText3d({
                         text = '['..serverId..']',
@@ -36,20 +35,19 @@ end
 -- Command
 
 local function openScoreboard()
-    lib.callback('qbx_scoreboard:server:getScoreboardData', false, function(players, cops, playerList)
-        playerOptin = playerList
+    local players, cops, admins = lib.callback.await('qbx_scoreboard:server:getScoreboardData')
+    onDutyAdmins = admins
 
-        SendNUIMessage({
-            action = 'open',
-            players = players,
-            maxPlayers = config.maxPlayers,
-            requiredCops = GlobalState.illegalActions,
-            currentCops = cops
-        })
+    SendNUIMessage({
+        action = 'open',
+        players = players,
+        maxPlayers = config.maxPlayers,
+        requiredCops = GlobalState.illegalActions,
+        currentCops = cops
+    })
 
-        scoreboardOpen = true
-        drawPlayerNumbers()
-    end)
+    isScoreboardOpen = true
+    drawPlayerNumbers()
 end
 
 local function closeScoreboard()
@@ -57,7 +55,7 @@ local function closeScoreboard()
         action = 'close',
     })
 
-    scoreboardOpen = false
+    isScoreboardOpen = false
 end
 
 if config.toggle then
@@ -66,9 +64,11 @@ if config.toggle then
         description = 'Open Scoreboard',
         defaultKey = config.openKey,
         onPressed = function()
-            scoreboardOpen = not scoreboardOpen
-            if scoreboardOpen then openScoreboard() end
-            closeScoreboard()
+            if isScoreboardOpen then
+                closeScoreboard()
+            else
+                openScoreboard()
+            end
         end,
     })
 else

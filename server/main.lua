@@ -4,7 +4,7 @@ GlobalState.illegalActions = sharedConfig.illegalActions
 lib.callback.register('qbx_scoreboard:server:getScoreboardData', function()
     local totalPlayers = 0
     local policeCount = 0
-    local players = {}
+    local onDutyAdmins = {}
 
     for _, v in pairs(exports.qbx_core:GetQBPlayers()) do
         if v then
@@ -14,10 +14,11 @@ lib.callback.register('qbx_scoreboard:server:getScoreboardData', function()
                 policeCount += 1
             end
 
-            players[v.PlayerData.source] = {isOnDutyAdmin = IsPlayerAceAllowed(v.PlayerData.source, 'admin') and v.PlayerData.optin}
+            onDutyAdmins[v.PlayerData.source] = IsPlayerAceAllowed(v.PlayerData.source, 'admin') and v.PlayerData.optin and true or nil
         end
     end
-    return totalPlayers, policeCount, players
+
+    return totalPlayers, policeCount, onDutyAdmins
 end)
 
 local function setActivityBusy(name, bool)
