@@ -25,5 +25,7 @@ local function setActivityBusy(name, bool)
     illegalActions[name].busy = bool
     GlobalState.illegalActions = illegalActions
 end
+
+---@deprecated use the setActivityBusy export instead
 RegisterNetEvent('qb-scoreboard:server:SetActivityBusy', setActivityBusy)
 exports('SetActivityBusy', setActivityBusy)
