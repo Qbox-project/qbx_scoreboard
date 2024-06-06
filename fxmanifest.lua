@@ -10,19 +10,13 @@ shared_scripts {
     '@qbx_core/modules/lib.lua',
 }
 
-client_scripts {
-    'config/client.lua',
-    'client/*.lua'
-}
-
-server_scripts {
-    'config/server.lua',
-    'server/*.lua'
-}
+client_scripts 'client/*.lua'
+server_script 'server/*.lua'
 
 ui_page 'html/ui.html'
 
 files {
+    'config/client.lua',
     'html/*',
 }
 
