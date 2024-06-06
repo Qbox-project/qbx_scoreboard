@@ -10,15 +10,14 @@ shared_scripts {
     '@qbx_core/modules/lib.lua',
 }
 
-client_script 'client/main.lua'
-server_script 'server/main.lua'
+client_script 'client/*.lua'
+server_script 'server/*.lua'
 
 ui_page 'html/ui.html'
 
 files {
     'html/*',
     'config/client.lua',
-    'config/shared.lua',
 }
 
 lua54 'yes'

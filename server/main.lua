@@ -1,5 +1,5 @@
-local sharedConfig = require 'config.shared'
-GlobalState.illegalActions = sharedConfig.illegalActions
+local config = require 'config.server'
+GlobalState.illegalActions = config.illegalActions
 
 lib.callback.register('qbx_scoreboard:server:getScoreboardData', function()
     local totalPlayers = 0
