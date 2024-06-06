@@ -16,8 +16,8 @@ server_script 'server/*.lua'
 ui_page 'html/ui.html'
 
 files {
-    'config/client.lua',
     'html/*',
+    'config/client.lua',
 }
 
 lua54 'yes'
