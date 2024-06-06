@@ -1,4 +1,5 @@
 return {
+    visibilityDistance = 10,
     openKey = 'HOME',
     toggle = true, -- If true, scoreboard will open/close on button press. If false, scoreboard stays open as long as button is held down.
 
