@@ -1,12 +1,11 @@
 local config = require 'config.client'
 local isScoreboardOpen, onDutyAdmins
 
-local function shouldShowPlayerId(isTargetAdmin)
-    local isClientAdmin = onDutyAdmins[cache.serverId]
+local function shouldShowPlayerId(targetServerId)
     if config.idVisibility == 'all' then return true end
-    if isClientAdmin then return true end
+    if onDutyAdmins[cache.serverId] then return true end
     if config.idVisibility == 'admin_only' then return false end
-    if config.idVisibility == 'admin_excluded' and isTargetAdmin then return false end
+    if config.idVisibility == 'admin_excluded' and onDutyAdmins[targetServerId] then return false end
     return true
 end
 
@@ -14,18 +13,27 @@ local function drawPlayerNumbers()
     CreateThread(function()
         while isScoreboardOpen do
             local players = cache('nearbyPlayers', function()
-                return lib.getNearbyPlayers(GetEntityCoords(cache.ped), 10, true)
+                local p = lib.getNearbyPlayers(GetEntityCoords(cache.ped), config.visibilityDistance, true)
+
+                for i = #p, 1, -1 do
+                    p[i].serverId = GetPlayerServerId(p[i].id)
+
+                    if not shouldShowPlayerId(p[i].serverId) then
+                        p[i] = p[#p]
+                        p[#p] = nil
+                    end
+                end
+
+                return p
             end, 1000)
+
             for i = 1, #players do
                 local player = players[i]
-                local serverId = GetPlayerServerId(player.id)
-                if shouldShowPlayerId(onDutyAdmins[serverId]) then
-                    local pedCoords = GetEntityCoords(player.ped)
-                    qbx.drawText3d({
-                        text = '['..serverId..']',
-                        coords = vec3(pedCoords.x, pedCoords.y, pedCoords.z + 1.0),
-                    })
-                end
+                local pedCoords = GetEntityCoords(player.ped)
+                qbx.drawText3d({
+                    text = '['..player.serverId..']',
+                    coords = vec3(pedCoords.x, pedCoords.y, pedCoords.z + 1.0),
+                })
             end
             Wait(0)
         end
