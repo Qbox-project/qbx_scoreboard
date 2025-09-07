@@ -14,7 +14,7 @@ lib.callback.register('qbx_scoreboard:server:getScoreboardData', function()
                 policeCount += 1
             end
 
-            onDutyAdmins[v.PlayerData.source] = IsPlayerAceAllowed(v.PlayerData.source, 'admin') and v.PlayerData.optin and true or nil
+            onDutyAdmins[v.PlayerData.source] = IsPlayerAceAllowed(v.PlayerData.source, 'admin') and v.PlayerData.metadata.optin and true or nil
         end
     end
 
