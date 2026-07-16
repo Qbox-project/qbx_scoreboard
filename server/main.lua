@@ -22,11 +22,15 @@ lib.callback.register('qbx_scoreboard:server:getScoreboardData', function()
 end)
 
 local function setActivityBusy(name, bool)
+    if type(name) ~= 'string' or type(bool) ~= 'boolean' then return end
+
     local illegalActions = GlobalState.illegalActions
+    if not illegalActions[name] then return end
+
     illegalActions[name].busy = bool
     GlobalState.illegalActions = illegalActions
 end
 
 ---@deprecated use the setActivityBusy export instead
-RegisterNetEvent('qb-scoreboard:server:SetActivityBusy', setActivityBusy)
+AddEventHandler('qb-scoreboard:server:SetActivityBusy', setActivityBusy)
 exports('SetActivityBusy', setActivityBusy)
